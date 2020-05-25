@@ -3,7 +3,18 @@ uuid = "284b63b1-8759-4032-ba27-6e3216e83f43"
 authors = ["Takafumi Arakaki <aka.tkf@gmail.com>"]
 version = "0.1.0"
 
+[deps]
+BangBang = "198e06fe-97b7-11e9-32a5-e1d131e6ad66"
+InitialValues = "22cec73e-a1b8-11e9-2c92-598750a2cf9c"
+OnlineStats = "a15396b6-48d5-5d58-9928-6d29437db91e"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
+
 [compat]
+BangBang = "0.3.24"
+InitialValues = "0.2.6"
+OnlineStats = "1"
+Transducers = "0.4.35"
 julia = "1"
 
 [extras]
