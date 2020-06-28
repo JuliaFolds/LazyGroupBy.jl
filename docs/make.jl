@@ -12,4 +12,5 @@ makedocs(
 deploydocs(
     # https://juliadocs.github.io/Documenter.jl/stable/lib/public/#Documenter.deploydocs
     repo = "github.com/JuliaFolds/LazyGroupBy.jl",
+    push_preview = true,
 )
