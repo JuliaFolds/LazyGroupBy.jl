@@ -1,5 +1,8 @@
 # LazyGroupBy: lazy, parallelizable and composable group-by operations
 
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliafolds.github.io/LazyGroupBy.jl/dev)
+[![GitHub Actions](https://github.com/JuliaFolds/LazyGroupBy.jl/workflows/Run%20tests/badge.svg)](https://github.com/JuliaFolds/LazyGroupBy.jl/actions?query=workflow%3A%22Run+tests%22)
+
 LazyGroupBy.jl exports a single API `grouped`.  It can be used to run
 group-by operation using the dot-call syntax:
 
