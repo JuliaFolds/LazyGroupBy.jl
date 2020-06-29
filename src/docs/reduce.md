@@ -14,7 +14,7 @@ Transducers.GroupByViewDict{Bool,Int64,…} with 2 entries:
   false => 4
   true  => 9
 
-julia> using OnlineStats: Mean
+julia> using OnlineStats
 
 julia> reduce.(Ref(Mean()), grouped(isodd, [0, 7, 3, 1, 5, 9, 4, 3, 0, 5]))
 Transducers.GroupByViewDict{Bool,Mean{Float64,EqualWeight},…} with 2 entries:
