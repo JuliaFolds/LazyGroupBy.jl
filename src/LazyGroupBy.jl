@@ -296,7 +296,7 @@ function _import_docs()
         try
             include_dependency(path)
             str = read(path, String)
-            str = replace(str, r"^```julia"m => "```jldoctest")
+            str = replace(str, r"^```julia"m => "```jldoctest $name")
             @eval @doc $str $name
         catch err
             @error(
