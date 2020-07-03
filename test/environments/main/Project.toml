@@ -1,0 +1,7 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+LazyGroupBy = "284b63b1-8759-4032-ba27-6e3216e83f43"
+OnlineStats = "a15396b6-48d5-5d58-9928-6d29437db91e"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
