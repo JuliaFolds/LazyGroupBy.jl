@@ -150,12 +150,18 @@ impl(::typeof(prod), kwargs::NamedTuple, group::GroupedBy) =
 impl(::typeof(prod), kwargs::NamedTuple, f, group::GroupedBy) =
     impl(foldl, check_kwargs(prod, kwargs), mul_prod, Map(f), group)
 
+struct AsBool{F}
+    f::F
+end
+AsBool(::Type{T}) where {T} = AsBool{Type{T}}(T)
+@inline (f::AsBool)(x) = f.f(x)::Bool
+
 impl(::typeof(count), ::NamedTuple{()}, group::GroupedBy) =
-    impl(foldl, NamedTuple(), +, Map(identity), group)
+    impl(foldl, (init = 0,), +, Map(AsBool(identity)), group)
 impl(::typeof(count), ::NamedTuple{()}, f, group::GroupedBy) =
-    impl(foldl, NamedTuple(), +, Map(f), group)
+    impl(foldl, (init = 0,), +, Map(AsBool(f)), group)
 impl(::typeof(length), ::NamedTuple{()}, group::GroupedBy) =
-    impl(foldl, NamedTuple(), +, Map(_ -> 1), group)
+    impl(foldl, (init = 0,), +, Map(_ -> 1), group)
 
 # impl(::typeof(any), ::NamedTuple{()}, group::GroupedBy) =
 #     impl(foldl, NamedTuple(), |, IdentityTransducer(), group)
