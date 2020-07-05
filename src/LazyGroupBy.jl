@@ -90,7 +90,7 @@ _groupby_kwargs(; init = Transducers.DefaultInit, kwargs...) = ((init,), kwargs)
 function _impl_fold(fold, kwargs, rf, xf, group)
     (init,), kwargs = _groupby_kwargs(; kwargs...)
     prexf, collection = extract_transducer(group.collection)
-    gxf = prexf |> GroupBy(group.key, Map(last) |> xf, rf, init)
+    gxf = opcompose(prexf, GroupBy(group.key, opcompose(Map(last), xf), rf, init))
     d = fold(right, gxf, collection; init = nothing, kwargs...)
     if d === nothing
         error("input collection is empty or all filtered out")
@@ -115,7 +115,7 @@ impl(::typeof(dreduce), kwargs, rf, xs) = impl(dreduce, kwargs, rf, Map(identity
 
 impl(::typeof(collect), kwargs, xf::Transducer, group::GroupedBy) = foldl(
     right,
-    GroupBy(group.key, Map(last) |> xf |> Map(SingletonVector), append!!),
+    GroupBy(group.key, opcompose(Map(last), xf, Map(SingletonVector)), append!!),
     group.collection,
 )
 impl(::typeof(collect), kwargs, group::GroupedBy) =
@@ -123,7 +123,7 @@ impl(::typeof(collect), kwargs, group::GroupedBy) =
 
 impl(::typeof(tcollect), kwargs, xf::Transducer, group::GroupedBy) = reduce(
     right,
-    GroupBy(group.key, Map(last) |> xf |> Map(SingletonVector), append!!),
+    GroupBy(group.key, opcompose(Map(last), xf, Map(SingletonVector)), append!!),
     group.collection,
 )
 impl(::typeof(tcollect), kwargs, group::GroupedBy) =
@@ -131,7 +131,7 @@ impl(::typeof(tcollect), kwargs, group::GroupedBy) =
 
 impl(::typeof(dcollect), kwargs, xf::Transducer, group::GroupedBy) = dreduce(
     right,
-    GroupBy(group.key, Map(last) |> xf |> Map(SingletonVector), append!!),
+    GroupBy(group.key, opcompose(Map(last), xf, Map(SingletonVector)), append!!),
     group.collection;
     kwargs...,
 )
@@ -223,7 +223,10 @@ impl(::typeof(findfirst), ::NamedTuple{()}, f, group::GroupedBy) = foldl(
     right,
     GroupBy(
         group.key ∘ last,
-        Filter(((_key, (_idx, val)),) -> f(val)) |> Map(((_key, (idx, _val)),) -> idx),
+        opcompose(
+            Filter(((_key, (_idx, val)),) -> f(val)),
+            Map(((_key, (idx, _val)),) -> idx),
+        ),
         left,
     ),
     pairs(group.collection),
@@ -235,7 +238,7 @@ impl(::typeof(findlast), ::NamedTuple{()}, f, group::GroupedBy) = foldl(
     right,
     GroupBy(
         group.key ∘ last,
-        Filter(((_key, (_idx, val)),) -> f(val)) |> Map(((_key, (idx, _val)),) -> idx),
+        opcompose(Filter(((_key, (_idx, val)),) -> f(val)), Map(((_key, (idx, _val)),) -> idx)),
         right,
     ),
     pairs(group.collection),
@@ -245,8 +248,10 @@ impl(::typeof(findall), kwargs, f, group::GroupedBy) = foldl(
     right,
     GroupBy(
         group.key ∘ last,
-        Filter(((_key, (_idx, val)),) -> f(val)) |>
-        Map(((_key, (idx, _val)),) -> SingletonVector(idx)),
+        opcompose(
+            Filter(((_key, (_idx, val)),) -> f(val)),
+            Map(((_key, (idx, _val)),) -> SingletonVector(idx)),
+        ),
         append!!,
     ),
     pairs(group.collection),
