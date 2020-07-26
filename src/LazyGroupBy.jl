@@ -22,6 +22,17 @@ if !@isdefined only
     using Compat: only
 end
 
+const FoldFunction0 = Union{typeof(foldl),typeof(reduce),typeof(dreduce)}
+if @isdefined foldxl
+    const FoldFunction1 = Union{typeof(foldxl),typeof(foldxt),typeof(foldxd)}
+else
+    const FoldFunction1 = Union{}
+    const foldxl = foldl
+    const foldxt = reduce
+    const foldxd = dreduce
+end
+const FoldFunction = Union{FoldFunction0,FoldFunction1}
+
 # Used only for `KWBroadcastedInner` below:
 function air end
 struct Aired{T}
@@ -98,20 +109,12 @@ function _impl_fold(fold, kwargs, rf, xf, group)
     return d
 end
 
-impl(::typeof(foldl), kwargs, rf, xf::Transducer, group::GroupedBy) =
-    _impl_fold(foldl, kwargs, rf, xf, group)
-impl(::typeof(reduce), kwargs, rf, xf::Transducer, group::GroupedBy) =
-    _impl_fold(reduce, kwargs, rf, xf, group)
-impl(::typeof(dreduce), kwargs, rf, xf::Transducer, group::GroupedBy) =
-    _impl_fold(dreduce, kwargs, rf, xf, group)
+impl(fold::FoldFunction, kwargs, rf, xf::Transducer, group::GroupedBy) =
+    _impl_fold(fold, kwargs, rf, xf, group)
+impl(fold::FoldFunction, kwargs, rf, xs) = impl(fold, kwargs, rf, Map(identity), xs)
 
-impl(::typeof(foldl), kwargs, rf, xs) = impl(foldl, kwargs, rf, Map(identity), xs)
 impl(::typeof(mapfoldl), kwargs, f, rf, xs) = impl(foldl, kwargs, rf, Map(f), xs)
-
-impl(::typeof(reduce), kwargs, rf, xs) = impl(reduce, kwargs, rf, Map(identity), xs)
 impl(::typeof(mapreduce), kwargs, f, rf, xs) = impl(reduce, kwargs, rf, Map(f), xs)
-
-impl(::typeof(dreduce), kwargs, rf, xs) = impl(dreduce, kwargs, rf, Map(identity), xs)
 
 impl(::typeof(collect), kwargs, xf::Transducer, group::GroupedBy) = foldl(
     right,
@@ -121,7 +124,7 @@ impl(::typeof(collect), kwargs, xf::Transducer, group::GroupedBy) = foldl(
 impl(::typeof(collect), kwargs, group::GroupedBy) =
     impl(collect, kwargs, IdentityTransducer(), group)
 
-impl(::typeof(tcollect), kwargs, xf::Transducer, group::GroupedBy) = reduce(
+impl(::typeof(tcollect), kwargs, xf::Transducer, group::GroupedBy) = foldxt(
     right,
     GroupBy(group.key, opcompose(Map(last), xf, Map(SingletonVector)), append!!),
     group.collection,
@@ -129,7 +132,7 @@ impl(::typeof(tcollect), kwargs, xf::Transducer, group::GroupedBy) = reduce(
 impl(::typeof(tcollect), kwargs, group::GroupedBy) =
     impl(tcollect, kwargs, IdentityTransducer(), group)
 
-impl(::typeof(dcollect), kwargs, xf::Transducer, group::GroupedBy) = dreduce(
+impl(::typeof(dcollect), kwargs, xf::Transducer, group::GroupedBy) = foldxd(
     right,
     GroupBy(group.key, opcompose(Map(last), xf, Map(SingletonVector)), append!!),
     group.collection;
