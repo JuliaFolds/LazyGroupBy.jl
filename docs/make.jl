@@ -7,6 +7,7 @@ makedocs(
     format = Documenter.HTML(),
     pages = ["Home" => "index.md", hide("internals.md")],
     modules = [LazyGroupBy],
+    doctest = false,
 )
 
 deploydocs(
