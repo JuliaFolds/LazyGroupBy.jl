@@ -79,8 +79,6 @@ Following generic and standard reducers are supported:
 * `findall.(f, grouped(_, array))` → `DICT{Key,Vector{keytype(collection)}}`
 * `foldl.(op, grouped(...); [init])`
 * `mapfoldl.(f, op, grouped(...); [init])`
-* `reduce.(op, grouped(...); [init])` (multi-threaded)
-* `mapreduce.(f, op, grouped(...); [init])` (multi-threaded)
 
 where `DICT{K,V}` above is a short-hand for `AbstractDict{<:K,<:V}`
 and `Key` is the type of the values returned from `key` function
@@ -92,8 +90,9 @@ For more complex tasks,
 be used:
 
 * `foldl.(op, xf, grouped(...); [init])`
-* `reduce.(op, xf, grouped(...); [init])` (multi-threaded)
-* `dreduce.(op, xf, grouped(...); [init])` (distributed)
+* `foldxl.(op, [xf,] grouped(...); [init])`
+* `foldxt.(op, [xf,] grouped(...); [init])` (multi-threaded)
+* `foldxd.(op, [xf,] grouped(...); [init])` (distributed)
 * `collect.(xf, grouped(...))`
 * `tcollect.(xf, grouped(...))` (multi-threaded version of `collect`)
 * `dcollect.(xf, grouped(...))` (distributed version of `collect`)
@@ -114,7 +113,7 @@ Transducers.jl.
 ## Implementation
 
 LazyGroupBy.jl is implemented as a direct transformation to
-`foldl`/`reduce`/`dreduce` and `GroupBy` from Transducer.jl.  Consider
+`foldl`/`foldxt`/`foldxd` and `GroupBy` from Transducer.jl.  Consider
 
 ```JULIA
 foldl.(rf, xf, grouped(key, collection); init = init)
