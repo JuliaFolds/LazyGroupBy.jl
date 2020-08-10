@@ -296,7 +296,9 @@ end
 
 # Helper function for Documenter
 _is_public(x) =
-    x === (@__MODULE__) || x === grouped || parentmodule(x) in (Base, Statistics)
+    x === (@__MODULE__) ||
+    x === grouped ||
+    parentmodule(x) in (Base, Statistics, Transducers)
 
 function _import_docs()
     processed = Symbol[]
