@@ -297,7 +297,7 @@ end
 # Helper function for Documenter
 _is_public(x) =
     x === (@__MODULE__) ||
-    x in grouped ||
+    x === grouped ||
     parentmodule(x) in (Base, Statistics, Transducers)
 
 function _import_docs()
